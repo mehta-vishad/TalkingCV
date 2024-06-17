@@ -13,18 +13,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 
-# Load environment variables
+
 load_dotenv()
 
-# Set OpenAI API key
-#print(os.getenv("OPENAI_API_KEY"))
-#openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Load data from CSV
+
+
 loader = CSVLoader(file_path="data.csv")
 documents = loader.load()
 
-# Create embeddings using HuggingFace model
+
 embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
 db = FAISS.from_documents(documents, embeddings)
 
@@ -33,11 +31,11 @@ def retrieve_info(query):
     page_contents_array = [doc.page_content for doc in similar_response]
     return page_contents_array
 
-# Use GPT-3.5 instead of GPT-4
+
 llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo", openai_api_key=os.getenv("OPENAI_API_KEY"))
 
 
-# Define the template
+
 template = """
 You are Vishad Mehta, and you will be answering questions based on your personal experience. Before responding, please review the given information to understand my background better.
 
@@ -98,10 +96,10 @@ def generate_response(question, conversation_history, visitor_name):
     )
     return response
 
-# FastAPI app
+
 app = FastAPI()
 
-#CORS middleware
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Adjust this to your frontend URL
@@ -124,7 +122,7 @@ async def chat_endpoint(request: ChatRequest):
     try:
         response_text = generate_response(request.question, request.conversation_history, request.visitor_name)
         
-        # Save visitor name and company to visitor_info.txt
+       
         visitor_info = f"Visitor Name: {request.visitor_name}\nCompany: {request.visitor_company}\n\n"
         with open('visitor_info.txt', 'a') as f:
             f.write(visitor_info)
