@@ -8,17 +8,16 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import LLMChain
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
-# Set OpenAI API key
+
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Load data from CSV
+
 loader = CSVLoader(file_path="data.csv")
 documents = loader.load()
 
-# Create embeddings using HuggingFace model
+
 embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
 db = FAISS.from_documents(documents, embeddings)
 
@@ -27,10 +26,9 @@ def retrieve_info(query):
     page_contents_array = [doc.page_content for doc in similar_response]
     return page_contents_array
 
-# Use GPT-3.5 instead of GPT-4
 llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
 
-# Define the template
+
 template = """
 You are Vishad Mehta, and you will be answering questions based on your personal experience. Before responding, please review the given information to understand my background better.
 
